@@ -1,5 +1,14 @@
 const { faker } = require('@faker-js/faker');
+
 const mysql = require("mysql2");
+
+const express = require("express");
+const app = express();
+const path = require("path");
+app.set("views engine", "ejs");
+app.set("views", path.join(__dirname, "/views"));
+
+const port = 3030;
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -8,30 +17,46 @@ const connection = mysql.createConnection({
     password: 'ranajihariom@1'
 });
 
-let createRandomUser = () => {
+//GET - fetch & show total number of users our app
 
-    return [
-        faker.datatype.uuid(),
-        faker.internet.userName(),
-        faker.internet.email(),
-        faker.internet.password(),
-    ];
-}
+app.get('/', (req, res) => {
 
-let query = "INSERT INTO user  (id,username,email,password) VALUES ?";
+    let query = `select count(*) from user`;
 
-let users = [];
-for (let i = 0; i < 10; i++) {
-    users.push(createRandomUser());
-}
+    try {
 
-connection.query(query, [users], (err, result) => {
-    if (err) {
-        console.error('Error showing tables:', err);
-        return;
+        connection.query(query, (error,result) => {
+
+            if (error) {
+                res.send(error);
+            }
+                console.log("query is working properly");
+                console.log(result[0]["count(*)"]);
+                // let {count} = result[0]["count(*)"];
+                // res.render("home.ejs",{count});
+                let count = [];
+                count[0] = result[0]["count(*)"];
+                res.render("home.ejs",{count});
+        })
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
     }
-    console.log(result);
+})
+
+
+app.listen(port, () => {
+
+    console.log(`server is listening to the port : ${port}`);
+
 });
+// let createRandomUser = () => {
 
-connection.end();
-
+//     return [
+//         faker.datatype.uuid(),
+//         faker.internet.userName(),
+//         faker.internet.email(),
+//         faker.internet.password(),
+//     ];
+// }
+// connection.end();
