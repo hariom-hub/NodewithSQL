@@ -51,9 +51,12 @@
                     <%= user.email %>
                 </th>
                 <th>
-                    <form action= "/user/<%=user.id %>/edit" method="get">
+                    <form action="/user/<%=user.id%>/edit" method="get">
                         <button>Edit username</button>
                     </form>
+                </th>
+                <th>
+                    <button>delete user</button>
                 </th>
             </tr>
             <% } %>

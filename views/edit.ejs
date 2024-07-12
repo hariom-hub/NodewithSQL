@@ -4,14 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit username</title>
+    <title>Edit page</title>
     <style>
-        html,
-        body {
-            height: 100%;
-            width: 100%;
-        }
-
         body {
             text-align: center;
         }
@@ -20,13 +14,20 @@
 
 <body>
 
-    <h1>Edit your username</h1>
-    <p>id : <%=result.id %>
-    </p>
-    <p>username : <%= result.username %>
-    </p>
-    <p>email : <%= result.email %>
-    </p>
+    <h1>you are editing your username.</h1>
+
+    <form method="post" action="/user/<%=user.id%>?_method=PATCH">
+        <h3>user id : <%= user.id %>
+        </h3><br>
+        <textarea name="username">
+        <%=user.username %>
+    </textarea><br>
+        <input type="password" name="password" id="" placeholder="Enter password">
+        <h3>email : <%= user.email %>
+        </h3>
+
+        <button type="submit">Save</button>
+    </form>
 </body>
 
 </html>

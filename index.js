@@ -1,14 +1,21 @@
-const { faker } = require('@faker-js/faker');
+const { faker, tr } = require('@faker-js/faker');
 
 const mysql = require("mysql2");
-
+const { v4: uuidv4 } = require('uuid');
 const express = require("express");
 const app = express();
+
 const path = require("path");
-const { error } = require('console');
+
+const methodOverride = require("method-override");
+
+app.use(methodOverride("_method"));
 
 app.set("views engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 const port = 3030;
 
@@ -72,23 +79,66 @@ app.get('/user', (req, res) => {
 //edit username
 
 app.get('/user/:id/edit', (req, res) => {
-
     let { id } = req.params;
-    let query = `select * from user where id = '${id}'`;
-    try {
-        connection.query(query, (error, result) => {
+    console.log(id);
 
+    let query = 'SELECT * FROM user WHERE id = ?';
+
+    try {
+        connection.query(query, [id], (error, result) => {
             if (error) {
-                throw error;
+                console.log(error);
+                res.sendStatus(500); // Added to handle errors properly
+            } else {
+                res.render("edit.ejs", { user: result[0] });
+                console.log(result);
             }
-            console.log(result);
-            res.render("edit.ejs", { result });
-        })
+        });
     } catch (error) {
         res.sendStatus(500);
     }
-    // console.log(id);
 });
+
+//update route
+
+app.patch('/user/:id', (req, res) => {
+
+    let { id } = req.params;
+    let q = `select * from user where id = '${id}'`;
+
+    try {
+        connection.query(q, (error, result) => {
+
+            if (error) {
+                res.sendStatus(500);
+                console.log("error occured");
+                return;
+            }
+            let user = result[0];
+            let { username: newUsername, password: formpassword } = req.body;
+            if (formpassword != user.password) {
+                res.send("wrong password entered.Try again!");
+            } else {
+                let q2 = `update user set username = '${newUsername}' where id= '${id}'`;
+                connection.query(q2, (error, result) => {
+
+                    if (error) {
+                        res.send(error);
+                        console.log(error);
+                        return;
+                    }
+                    res.redirect('/user');
+                })
+            }
+        })
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(404);
+    }
+});
+
+//delete user
+
 
 app.listen(port, () => {
 
