@@ -56,7 +56,14 @@
                     </form>
                 </th>
                 <th>
-                    <button>delete user</button>
+                    <form action="/user/<%=user.id%>/data?_method=GET" method="get">
+                        <button>Full Profile</button>
+                    </form>
+                </th>
+                <th>
+                    <form action="/user/" method="post">
+                        <button>Delete User</button>
+                    </form>
                 </th>
             </tr>
             <% } %>

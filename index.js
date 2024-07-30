@@ -137,9 +137,52 @@ app.patch('/user/:id', (req, res) => {
     }
 });
 
+//view user
+app.get('/user/:id/data', (req, res) => {
+
+    let { id } = req.params;
+    let query = `select * from user where id = '${id}'`;
+
+    try {
+        connection.query(query, (error, result) => {
+
+            if (error) {
+
+                res.send("error occured");
+                return;
+            }
+            let data = result[0];
+            console.log(data);
+            res.render("data.ejs", { data });
+        })
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(404);
+    }
+})
 //delete user
 
+app.delete('/user/:id', (req, res) => {
 
+    let { id } = req.params;
+    let query = `delete * from user where id = '${id}'`;
+
+    try {
+        connection.query(query, (error, result) => {
+
+            if (error) {
+                res.send("unable to delete");
+                return;
+            }
+            let user = result[0];
+            res.send(`user ${user.username} deleted`);
+            console.log(user);
+        })
+    } catch (error) {
+        res.send(error);
+        console.log(error);
+    }
+})
 app.listen(port, () => {
 
     console.log(`server is listening to the port : ${port}`);
